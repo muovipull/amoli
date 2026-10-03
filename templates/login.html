@@ -1,0 +1,14 @@
+<!-- login.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h2>Kirjaudu sisään</h2>
+    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Käyttäjänimi" required style="width:90%; padding:10px; margin-bottom:10px;">
+        <input type="password" name="password" placeholder="Salasana" required style="width:90%; padding:10px; margin-bottom:10px;">
+        <button type="submit" class="btn">Kirjaudu</button>
+    </form>
+    <p>Eikö tiliä? <a href="{{ url_for('register') }}">Rekisteröidy tästä</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,192 @@
+/* Vaalea teema (Oletus) */
+:root {
+    --bg-color: #f7f7f7;
+    --card-bg: #ffffff;
+    --text-color: #3c3c3c;
+    --border-color: #e5e5e5;
+    --topbar-bg: #ffffff;
+    --nav-bg: #ffffff;
+    --input-bg: #ffffff;
+    
+    --duo-green: #58cc02;
+    --duo-green-dark: #46a302;
+    --duo-blue: #1cb0f6;
+    --duo-red: #ff4b4b;
+}
+
+/* Tumma teema kun html-elementillä on dark-theme luokka */
+html.dark-theme, body.dark-theme {
+    --bg-color: #131f24;
+    --card-bg: #18252b;
+    --text-color: #ffffff;
+    --border-color: #37464f;
+    --topbar-bg: #18252b;
+    --nav-bg: #18252b;
+    --input-bg: #202f36;
+}
+
+html {
+    background-color: var(--bg-color);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding-bottom: 70px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: var(--topbar-bg);
+    padding: 10px;
+    border-bottom: 2px solid var(--border-color);
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.theme-toggle-btn {
+    background: none;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+}
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--nav-bg);
+    border-top: 2px solid var(--border-color);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 100;
+}
+
+.nav-item {
+    text-decoration: none;
+    color: #888;
+    font-size: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nav-item.active {
+    color: var(--duo-green);
+    font-weight: bold;
+}
+
+.container {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 15px;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Syötekentät ja valikot */
+input, select {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border: 2px solid var(--border-color);
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box; /* Korjattu kirjoitusvirhe */
+    margin-bottom: 12px; /* Lisää selkeän välin kenttien väliin */
+    display: block;
+}
+/* Otsikot kenttien yläpuolella */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+select option {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+input::placeholder {
+    color: #888888;
+    opacity: 1;
+}
+
+html.dark-theme input::placeholder,
+body.dark-theme input::placeholder {
+    color: #a0a0a0;
+}
+
+.btn {
+    background: var(--duo-green);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 0 var(--duo-green-dark);
+    text-transform: uppercase;
+}
+
+.btn:active {
+    transform: translateY(4px);
+    box-shadow: none;
+}
+
+.path-lesson-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--duo-green);
+    border: none;
+    box-shadow: 0 6px 0 var(--duo-green-dark);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    margin: 15px auto;
+    display: block;
+}
+
+.modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-color);
+    color: var(--text-color);
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.hidden { display: none !important; }

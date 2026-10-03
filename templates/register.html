@@ -1,0 +1,13 @@
+<!-- register.html -->
+{% extends 'base.html' %}
+{% block content %}
+<div class="card">
+    <h2>Luo uusi tili</h2>
+    {% if error %}<p style="color:red;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Käyttäjänimi" required style="width:90%; padding:10px; margin-bottom:10px;">
+        <input type="password" name="password" placeholder="Salasana" required style="width:90%; padding:10px; margin-bottom:10px;">
+        <button type="submit" class="btn">Rekisteröidy</button>
+    </form>
+</div>
+{% endblock %}

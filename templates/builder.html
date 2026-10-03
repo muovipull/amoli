@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>🛠️ Tehtävätehdas & Osiot</h2>
+
+<div class="card">
+    <h3>1. Lisää uusi Jakso / Osa</h3>
+    <input type="text" id="sec-title" placeholder="Esim. Osa 2: Jatkotaso" style="width:100%; padding:10px; margin-bottom:10px;">
+    <button class="btn" onclick="addSection()">Luo Jakso</button>
+</div>
+
+<div class="card">
+    <h3>2. Lisää Osa / Yksikkö</h3>
+    <select id="sec-select" style="width:100%; padding:10px; margin-bottom:10px;">
+        {% for s in sections %}
+            <option value="{{ s.id }}">{{ s.title }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" id="unit-title" placeholder="Osion nimi" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="unit-desc" placeholder="Kuvaus" style="width:100%; padding:10px; margin-bottom:10px;">
+    <button class="btn" onclick="addUnit()">Luo Osa</button>
+</div>
+
+<div class="card">
+    <h3>3. Lisää Tehtävä</h3>
+    <label>Valitse oppitunti:</label>
+    <select id="lesson-select" style="width:100%; padding:10px; margin-bottom:10px;">
+        {% for l in lessons %}
+            <option value="{{ l.id }}">{{ l.title }}</option>
+        {% endfor %}
+    </select>
+    
+    <label>Tyyppi:</label>
+    <select id="q-type" style="width:100%; padding:10px; margin-bottom:10px;">
+        <option value="choice">Monivalinta</option>
+        <option value="wordbank">Sanasokkelo / Sanajärjestys</option>
+        <option value="input">Käännöstehtävä (tekstinsyöttö)</option>
+    </select>
+
+    <input type="text" id="q-prompt" placeholder="Kysymys / Lause suomeksi" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="q-answer" placeholder="Oikea vastaus englanniksi" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="q-choices" placeholder="Väärät vaihtoehdot / Lisäsanat (pilkulla eroteltuna)" style="width:100%; padding:10px; margin-bottom:10px;">
+    
+    <button class="btn" onclick="addQuestion()">Tallenna Tehtävä</button>
+</div>
+
+<script>
+function addSection() {
+    fetch('/api/add_section', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ title: document.getElementById('sec-title').value })
+    }).then(() => location.reload());
+}
+
+function addUnit() {
+    fetch('/api/add_unit', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            section_id: document.getElementById('sec-select').value,
+            title: document.getElementById('unit-title').value,
+            description: document.getElementById('unit-desc').value
+        })
+    }).then(() => location.reload());
+}
+
+function addQuestion() {
+    fetch('/api/add_question', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            lesson_id: document.getElementById('lesson-select').value,
+            type: document.getElementById('q-type').value,
+            prompt: document.getElementById('q-prompt').value,
+            answer: document.getElementById('q-answer').value,
+            choices: document.getElementById('q-choices').value
+        })
+    }).then(() => alert('Tehtävä lisätty!'));
+}
+</script>
+{% endblock %}

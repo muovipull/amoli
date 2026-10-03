@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="text-align: center;">
+    <h2>👤 {{ target_user.username }}</h2>
+    <p>🔥 Streak: {{ target_user.streak }} päivää | ⚡ {{ target_user.xp }} total XP</p>
+</div>
+
+<div class="card">
+    <h3>📊 XP-vertailukaavio</h3>
+    <canvas id="xpChart"></canvas>
+</div>
+
+<script>
+const ctx = document.getElementById('xpChart').getContext('2d');
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Ma', 'Ti', 'Ke', 'To', 'Pe', 'La', 'Su'],
+        datasets: [
+            {
+                label: '{{ current_user.username }} (Sinä)',
+                data: [15, 30, 45, 20, 60, 10, 40],
+                backgroundColor: '#58cc02'
+            },
+            {
+                label: '{{ target_user.username }}',
+                data: [10, 20, 15, 30, 25, 50, 20],
+                backgroundColor: '#1cb0f6'
+            }
+        ]
+    },
+    options: {
+        responsive: true,
+        scales: { y: { beginAtZero: true } }
+    }
+});
+</script>
+{% endblock %}

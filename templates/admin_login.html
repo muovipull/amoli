@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card" style="max-width: 400px; margin: 40px auto; text-align: center;">
+    <h2>🔒 Järjestelmävalvoja</h2>
+    <p>Syötä salasana päästäksesi Tehtävätehtaaseen.</p>
+    
+    {% if error %}
+        <p style="color: var(--duo-red); font-weight: bold;">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('builder') }}">
+        <input type="password" name="admin_password" placeholder="Admin-salasana" required style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 2px solid var(--duo-gray); box-sizing: border-box;">
+        <button type="submit" class="btn" style="width: 100%;">Kirjaudu Tehtävätehtaaseen</button>
+    </form>
+</div>
+{% endblock %}

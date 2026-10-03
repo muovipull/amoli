@@ -1,0 +1,17 @@
+duolingo_app/
+├── app.py
+├── schema.sql
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── app.js
+└── templates/
+    ├── base.html
+    ├── index.html
+    ├── login.html
+    ├── register.html
+    ├── builder.html
+    ├── practice.html
+    ├── friends.html
+    └── profile.html
