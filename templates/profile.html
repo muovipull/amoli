@@ -19,12 +19,12 @@ new Chart(ctx, {
         datasets: [
             {
                 label: '{{ current_user.username }} (Sinä)',
-                data: [15, 30, 45, 20, 60, 10, 40],
+                data: [{{ current_user.history_data }}],
                 backgroundColor: '#58cc02'
             },
             {
                 label: '{{ target_user.username }}',
-                data: [10, 20, 15, 30, 25, 50, 20],
+                data: [{{ target_user.history_data }}],
                 backgroundColor: '#1cb0f6'
             }
         ]

@@ -21,7 +21,18 @@
 </div>
 
 <div class="card">
-    <h3>3. Lisää Tehtävä</h3>
+    <h3>3. Lisää uusi Oppitunti</h3>
+    <select id="lesson-unit-select" style="width:100%; padding:10px; margin-bottom:10px;">
+        {% for u in units %}
+            <option value="{{ u.id }}">{{ u.title }}</option>
+        {% endfor %}
+    </select>
+    <input type="text" id="lesson-title" placeholder="Oppitunnin nimi (esim. Oppitunti 2: Kysymykset)" style="width:100%; padding:10px; margin-bottom:10px;">
+    <button class="btn" onclick="addLesson()">Luo Oppitunti</button>
+</div>
+
+<div class="card">
+    <h3>4. Lisää Tehtävä</h3>
     <label>Valitse oppitunti:</label>
     <select id="lesson-select" style="width:100%; padding:10px; margin-bottom:10px;">
         {% for l in lessons %}
@@ -29,53 +40,104 @@
         {% endfor %}
     </select>
     
-    <label>Tyyppi:</label>
-    <select id="q-type" style="width:100%; padding:10px; margin-bottom:10px;">
-        <option value="choice">Monivalinta</option>
-        <option value="wordbank">Sanasokkelo / Sanajärjestys</option>
-        <option value="input">Käännöstehtävä (tekstinsyöttö)</option>
+    <label>Tehtävätyyppi:</label>
+    <select id="q-type" onchange="updateBuilderForm()" style="width:100%; padding:10px; margin-bottom:10px;">
+        <option value="choice">Monivalinta (valitse oikea vastaus vaihtoehdoista)</option>
+        <option value="wordbank">Sanajärjestys / Sanapankki</option>
+        <option value="input">Kirjoitustehtävä (vastaa kirjoittamalla)</option>
     </select>
 
-    <input type="text" id="q-prompt" placeholder="Kysymys / Lause suomeksi" style="width:100%; padding:10px; margin-bottom:10px;">
-    <input type="text" id="q-answer" placeholder="Oikea vastaus englanniksi" style="width:100%; padding:10px; margin-bottom:10px;">
-    <input type="text" id="q-choices" placeholder="Väärät vaihtoehdot / Lisäsanat (pilkulla eroteltuna)" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="q-prompt" placeholder="Kysymys tai lause suomeksi (esim. 'Miten sanotaan Hei?')" style="width:100%; padding:10px; margin-bottom:10px;">
+    <input type="text" id="q-answer" placeholder="Oikea vastaus (esim. 'Hello')" style="width:100%; padding:10px; margin-bottom:10px;">
     
+    <div id="choices-container">
+        <input type="text" id="q-choices" placeholder="Väärät vaihtoehdot pilkulla erotettuna (esim. 'Hi,Bye,Morning')" style="width:100%; padding:10px; margin-bottom:10px;">
+    </div>
+    
+    <div id="builder-help" style="font-size: 13px; opacity: 0.8; margin-bottom: 15px; background: var(--bg-color); padding: 10px; border-radius: 8px; border: 1px dashed var(--border-color);">
+        ℹ️ <strong>Monivalinta:</strong> Anna oikea vastaus ja väärät vaihtoehdot pilkulla erotettuna. Sovellus sekoittaa ne automaattisesti käyttäjälle.
+    </div>
+
     <button class="btn" onclick="addQuestion()">Tallenna Tehtävä</button>
 </div>
 
 <script>
+function updateBuilderForm() {
+    const type = document.getElementById('q-type').value;
+    const choicesContainer = document.getElementById('choices-container');
+    const helpBox = document.getElementById('builder-help');
+    const ansInput = document.getElementById('q-answer');
+    
+    if (type === 'choice') {
+        choicesContainer.style.display = 'block';
+        ansInput.placeholder = "Oikea vastaus englanniksi (esim. 'Hello')";
+        helpBox.innerHTML = `ℹ️ <strong>Monivalinta:</strong> Anna oikea vastaus ja väärät vaihtoehdot pilkulla erotettuna. Sovellus sekoittaa ne automaattisesti käyttäjälle.`;
+    } else if (type === 'wordbank') {
+        choicesContainer.style.display = 'block';
+        ansInput.placeholder = "Koko oikea lause (esim. 'Hello, how are you')";
+        helpBox.innerHTML = `ℹ️ <strong>Sanajärjestys:</strong> 'Oikea vastaus' on koko lause. 'Väärät vaihtoehdot' ovat ylimääräisiä sanoja sekaan (pilkulla erotettuna).`;
+    } else if (type === 'input') {
+        choicesContainer.style.display = 'none';
+        ansInput.placeholder = "Oikea vastaus (esim. 'Good morning')";
+        helpBox.innerHTML = `ℹ️ <strong>Kirjoitustehtävä:</strong> Käyttäjä kirjoittaa vastauksen näppäimistöllä. Vaihtoehtoja ei tarvita.`;
+    }
+}
+
 function addSection() {
+    const title = document.getElementById('sec-title').value;
+    if (!title) { alert('Syötä jakson nimi!'); return; }
     fetch('/api/add_section', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ title: document.getElementById('sec-title').value })
-    }).then(() => location.reload());
+        body: JSON.stringify({ title })
+    }).then(() => { alert('Jakso luotu!'); location.reload(); });
 }
 
 function addUnit() {
+    const section_id = document.getElementById('sec-select').value;
+    const title = document.getElementById('unit-title').value;
+    const description = document.getElementById('unit-desc').value;
+    if (!title) { alert('Syötä osion nimi!'); return; }
     fetch('/api/add_unit', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            section_id: document.getElementById('sec-select').value,
-            title: document.getElementById('unit-title').value,
-            description: document.getElementById('unit-desc').value
-        })
-    }).then(() => location.reload());
+        body: JSON.stringify({ section_id, title, description })
+    }).then(() => { alert('Osa luotu!'); location.reload(); });
+}
+
+function addLesson() {
+    const unit_id = document.getElementById('lesson-unit-select').value;
+    const title = document.getElementById('lesson-title').value;
+    if (!title) { alert('Syötä oppitunnin nimi!'); return; }
+    fetch('/api/add_lesson', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ unit_id, title })
+    }).then(() => { alert('Oppitunti luotu!'); location.reload(); });
 }
 
 function addQuestion() {
+    const lesson_id = document.getElementById('lesson-select').value;
+    const type = document.getElementById('q-type').value;
+    const prompt = document.getElementById('q-prompt').value;
+    const answer = document.getElementById('q-answer').value;
+    const choices = type === 'input' ? '' : document.getElementById('q-choices').value;
+
+    if (!prompt || !answer) {
+        alert('Täytä vähintään kysymys ja oikea vastaus!');
+        return;
+    }
+
     fetch('/api/add_question', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-            lesson_id: document.getElementById('lesson-select').value,
-            type: document.getElementById('q-type').value,
-            prompt: document.getElementById('q-prompt').value,
-            answer: document.getElementById('q-answer').value,
-            choices: document.getElementById('q-choices').value
-        })
-    }).then(() => alert('Tehtävä lisätty!'));
+        body: JSON.stringify({ lesson_id, type, prompt, answer, choices })
+    }).then(() => {
+        alert('Tehtävä tallennettu onnistuneesti!');
+        document.getElementById('q-prompt').value = '';
+        document.getElementById('q-answer').value = '';
+        if (document.getElementById('q-choices')) document.getElementById('q-choices').value = '';
+    });
 }
 </script>
 {% endblock %}

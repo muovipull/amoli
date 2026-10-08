@@ -9,7 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = 'duolingo_super_secret_key_change_in_production'
-DATABASE = 'duolingo.db'
+DATABASE = 'data.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -41,7 +41,8 @@ def init_db():
                 password_hash TEXT NOT NULL,
                 xp INTEGER DEFAULT 0,
                 streak INTEGER DEFAULT 1,
-                gems INTEGER DEFAULT 100
+                gems INTEGER DEFAULT 100,
+                history_data TEXT DEFAULT '10,20,15,30,25,50,20'
             );
 
             CREATE TABLE sections (
@@ -237,8 +238,8 @@ def friends():
 @login_required
 def profile(user_id):
     db = get_db()
-    target_user = db.execute('SELECT id, username, xp, streak, gems FROM users WHERE id = ?', (user_id,)).fetchone()
-    current_user = db.execute('SELECT id, username, xp FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+    target_user = db.execute('SELECT id, username, xp, streak, gems, history_data FROM users WHERE id = ?', (user_id,)).fetchone()
+    current_user = db.execute('SELECT id, username, xp, history_data FROM users WHERE id = ?', (session['user_id'],)).fetchone()
     
     if not target_user:
         return redirect(url_for('index'))
@@ -313,7 +314,22 @@ def get_random_questions():
 def complete_lesson():
     xp_gained = request.json.get('xp', 10)
     db = get_db()
-    db.execute('UPDATE users SET xp = xp + ?, gems = gems + 5 WHERE id = ?', (xp_gained, session['user_id']))
+    user_id = session['user_id']
+    
+    # Päivitetään käyttäjän kokonais-XP ja jalokivet
+    db.execute('UPDATE users SET xp = xp + ?, gems = gems + 5 WHERE id = ?', (xp_gained, user_id))
+    
+    # Päivitetään myös kaavion dataa (viimeisin luku kasvaa ansaistulla XP:llä)
+    user = db.execute('SELECT history_data FROM users WHERE id = ?', (user_id,)).fetchone()
+    if user and user['history_data']:
+        parts = [int(x) for x in user['history_data'].split(',')]
+    else:
+        parts = [10, 20, 15, 30, 25, 50, 20]
+    
+    parts[-1] += xp_gained
+    new_history = ','.join(map(str, parts))
+    db.execute('UPDATE users SET history_data = ? WHERE id = ?', (new_history, user_id))
+    
     db.commit()
     return jsonify({'success': True})
 
